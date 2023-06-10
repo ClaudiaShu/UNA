@@ -67,7 +67,7 @@ def perform_translation(batch_texts, model, tokenizer, language="fr"):
 
 
 class wiki_Dataset(Dataset):
-    def __init__(self, data_files = "../training/wiki1m_for_simcse.txt"):
+    def __init__(self, data_files = "data/training/wiki1m_for_simcse.txt"):
         data_wiki = load_dataset('text', data_files=data_files)
         self.data = data_wiki['train']
 
@@ -87,7 +87,7 @@ def main():
                             shuffle=False,
                             pin_memory=False)
 
-    outfile = "../training/translate_es.txt"
+    outfile = "data/training/translate_es.txt"
 
     first_model.eval()
     second_model.eval()
