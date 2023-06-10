@@ -19,7 +19,7 @@ pip install -r requirements.txt
 ### Training set
 
 ```
-data/download_wiki.sh
+bash data/download_wiki.sh
 ```
 
 ### Evaluation set
