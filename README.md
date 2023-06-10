@@ -24,7 +24,7 @@ bash data/download_wiki.sh
 
 ### Evaluation set
 ```
-cd UNA/data/downstream/
+cd data/downstream/
 bash download_dataset.sh
 ```
 
