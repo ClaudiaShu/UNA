@@ -127,9 +127,7 @@ def main():
 
     optimizer = torch.optim.AdamW(model.parameters(), weight_decay=args.weight_decay, lr=args.lr)
     scheduler = get_linear_schedule(optimizer, num_training_steps=len(train_loader)*args.epochs)
-    # scheduler = get_cosine_schedule(optimizer, num_training_steps=len(train_loader)*args.epochs)
-    # scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=100, num_training_steps=len(train_loader)*args.epochs)
-
+   
     simcse = SimCSE(args=args, model=model, optimizer=optimizer, scheduler=scheduler, tokenizer=tokenizer)
     if args.do_train:
         simcse.train(train_loader=train_loader, eval_loader=eval_loader)

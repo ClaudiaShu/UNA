@@ -14,7 +14,7 @@ from tqdm import tqdm
 from utils import save_config_file
 
 '''
-refer: https://github.com/vdogmcgee/SimCSE-Chinese-Pytorch/blob/main/simcse_unsup.py
+thanks to: https://github.com/vdogmcgee/SimCSE-Chinese-Pytorch/blob/main/simcse_unsup.py
 '''
 
 class SimCSE(object):
