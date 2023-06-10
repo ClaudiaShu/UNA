@@ -1,0 +1,8 @@
+.vscode/launch.json
+data/downstream
+data/stsbenchmark
+data/training
+results/
+tfidf/
+wandb/
+evaluate/visualize

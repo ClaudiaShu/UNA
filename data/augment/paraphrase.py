@@ -63,7 +63,7 @@ def get_paraphrased_sentences(model, tokenizer, sentence, num_return_sequences=5
 
 
 class wiki_Dataset(Dataset):
-    def __init__(self, data_files = "data/training/filtered_wiki.txt"):
+    def __init__(self, data_files = "data/training/wiki1m_for_simcse.txt"):
         data_wiki = load_dataset('text', data_files=data_files)
         self.data = data_wiki['train']
 
@@ -85,7 +85,7 @@ def main():
 
     model_name = 'pegasus'
 
-    outfile = f"data/training/filtered_wiki_para.txt"
+    outfile = f"data/training/paraphrase.txt"
 
     model, tokenizer = get_model(model_name=model_name)
 
