@@ -1,14 +1,11 @@
 import torch
 from torch import nn
-from transformers import AutoModel, BertConfig, BertModel, RobertaConfig, RobertaModel, ElectraConfig, ElectraModel
+from transformers import AutoModel, BertConfig, BertModel
 from transformers.models.bert.modeling_bert import BertLMPredictionHead
-from transformers.models.roberta.modeling_roberta import RobertaLMHead
-# from transformers.models.electra.modeling_electra import
-
 
 class MLPLayer(nn.Module):
     """
-    Head for getting sentence representations over RoBERTa/BERT's CLS representation.
+    Head for getting sentence representations over BERT's CLS representation.
     """
 
     def __init__(self, config, *args, **kwargs):
@@ -53,36 +50,18 @@ class SimcseModelUnsup(nn.Module):
         if pretrained_model is None:
             config = BertConfig()
             self.model = BertModel(config)
-        elif self.args.arch == 'roberta':
-            config = RobertaConfig.from_pretrained(pretrained_model)
-            config.attention_probs_dropout_prob = self.args.dropout
-            config.hidden_dropout_prob = self.args.dropout
-            self.model = AutoModel.from_pretrained(pretrained_model, config=config)
-            if self.args.do_mlm:
-                self.lm_head = RobertaLMHead(config)
-        elif self.args.arch == 'bert':
-            config = BertConfig.from_pretrained(pretrained_model)
-            config.attention_probs_dropout_prob = self.args.dropout
-            config.hidden_dropout_prob = self.args.dropout
-            self.model = AutoModel.from_pretrained(pretrained_model, config=config)
-            if self.args.do_mlm:
-                self.lm_head = BertLMPredictionHead(config)
-        elif self.args.arch == 'electra':
-            config = ElectraConfig.from_pretrained(pretrained_model)
-            config.attention_probs_dropout_prob = self.args.dropout
-            config.hidden_dropout_prob = self.args.dropout
-            self.model = AutoModel.from_pretrained(pretrained_model, config=config)
-            # if self.do_mlm:
-        else:
-            raise ValueError("Unsupported pretrained model")
 
+        config = BertConfig.from_pretrained(pretrained_model)
+        config.attention_probs_dropout_prob = self.args.dropout
+        config.hidden_dropout_prob = self.args.dropout
+        self.model = AutoModel.from_pretrained(pretrained_model, config=config)
+        if self.args.do_mlm:
+            self.lm_head = BertLMPredictionHead(config)
+        
         self.mlp = MLPLayer(config, args=self.args)
 
     def forward(self, input_ids, attention_mask, token_type_ids=None, output_hidden_states=True, is_train=True):
-        if self.args.arch == 'roberta':
-            out = self.model(input_ids, attention_mask, output_hidden_states=output_hidden_states, return_dict=True)
-        else:
-            out = self.model(input_ids, attention_mask, token_type_ids, output_hidden_states=output_hidden_states, return_dict=True)
+        out = self.model(input_ids, attention_mask, token_type_ids, output_hidden_states=output_hidden_states, return_dict=True)
             
         if self.args.pooling == 'cls':
             # If using "cls", we add an extra MLP layer
@@ -127,68 +106,37 @@ class ScratchModelUnsup(nn.Module):
         if pretrained_model is None:
             config = BertConfig()
             self.model = BertModel(config, args=self.args)
-        elif self.args.arch == 'roberta':
-            # pass the config to model constructor instead of from_pretrained
-            # this creates the model as per the params in config
-            # but with weights randomly initialized
-            config = RobertaConfig(
-                attention_probs_dropout_prob=self.args.dropout,
-                bos_token_id=0,
-                eos_token_id=2,
-                hidden_act='gelu',
-                hidden_dropout_prob=self.args.dropout,
-                hidden_size=768,
-                initializer_range=0.02,
-                intermediate_size=3072,
-                layer_norm_eps=1e-05,
-                max_position_embeddings=514,
-                model_type='roberta',
-                num_attention_heads=12,
-                num_hidden_layers=12,
-                pad_token_id=1,
-                vocab_size=50265,
-                type_vocab_size=1,
-            )
-            self.model = RobertaModel(config)
-            if self.args.do_mlm:
-                self.lm_head = RobertaLMHead(config)
-        elif self.args.arch == 'bert':
-            # pass the config to model constructor instead of from_pretrained
-            # this creates the model as per the params in config
-            # but with weights randomly initialized
-            config = BertConfig(
-                attention_probs_dropout_prob=self.args.dropout,
-                gradient_checkpointing=False,
-                hidden_act='gelu',
-                hidden_dropout_prob=self.args.dropout,
-                hidden_size=768,
-                initializer_range=0.02,
-                intermediate_size=3072,
-                layer_norm_eps=1e-12,
-                max_position_embeddings=512,
-                model_type='bert',
-                num_attention_heads=12,
-                num_hidden_layers=12,
-                pad_token_id=0,
-                position_embedding_type='absolute',
-                transformers_version='4.6.0.dev0',
-                vocab_size=30522,
-                type_vocab_size=2,
-            )
-            self.model = BertModel(config)
-            if self.args.do_mlm:
-                self.lm_head = BertLMPredictionHead(config)
-        else:
-            raise ValueError("Unsupported pretrained model")
+
+        # pass the config to model constructor instead of from_pretrained
+        # this creates the model as per the params in config
+        # but with weights randomly initialized
+        config = BertConfig(
+            attention_probs_dropout_prob=self.args.dropout,
+            gradient_checkpointing=False,
+            hidden_act='gelu',
+            hidden_dropout_prob=self.args.dropout,
+            hidden_size=768,
+            initializer_range=0.02,
+            intermediate_size=3072,
+            layer_norm_eps=1e-12,
+            max_position_embeddings=512,
+            model_type='bert',
+            num_attention_heads=12,
+            num_hidden_layers=12,
+            pad_token_id=0,
+            position_embedding_type='absolute',
+            transformers_version='4.6.0.dev0',
+            vocab_size=30522,
+            type_vocab_size=2,
+        )
+        self.model = BertModel(config)
+        if self.args.do_mlm:
+            self.lm_head = BertLMPredictionHead(config)
 
         self.mlp = MLPLayer(config)
 
     def forward(self, input_ids, attention_mask, token_type_ids=None, output_hidden_states=True, is_train=True):
-        if self.args.arch == 'roberta':
-            out = self.model(input_ids, attention_mask, output_hidden_states=output_hidden_states, return_dict=True)
-        else:
-            out = self.model(input_ids, attention_mask, token_type_ids, output_hidden_states=output_hidden_states,
-                             return_dict=True)
+        out = self.model(input_ids, attention_mask, token_type_ids, output_hidden_states=output_hidden_states,return_dict=True)
 
         if self.args.pooling == 'cls':
             # If using "cls", we add an extra MLP layer

@@ -176,20 +176,14 @@ class SimCSE(object):
                 # source        [batch, 1, seq_len] -> [batch, seq_len]
                 source_input_ids = source.get('input_ids').squeeze(1).to(self.args.device)
                 source_attention_mask = source.get('attention_mask').squeeze(1).to(self.args.device)
-                if self.args.arch == 'roberta':
-                    source_pred = model(source_input_ids, source_attention_mask, is_train=False)
-                else:
-                    source_token_type_ids = source.get('token_type_ids').squeeze(1).to(self.args.device)
-                    source_pred = model(source_input_ids, source_attention_mask, source_token_type_ids, is_train=False)
+                source_token_type_ids = source.get('token_type_ids').squeeze(1).to(self.args.device)
+                source_pred = model(source_input_ids, source_attention_mask, source_token_type_ids, is_train=False)
 
                 # target        [batch, 1, seq_len] -> [batch, seq_len]
                 target_input_ids = target.get('input_ids').squeeze(1).to(self.args.device)
                 target_attention_mask = target.get('attention_mask').squeeze(1).to(self.args.device)
-                if self.args.arch == 'roberta':
-                    target_pred = model(source_input_ids, source_attention_mask, is_train=False)
-                else:
-                    target_token_type_ids = target.get('token_type_ids').squeeze(1).to(self.args.device)
-                    target_pred = model(target_input_ids, target_attention_mask, target_token_type_ids, is_train=False)
+                target_token_type_ids = target.get('token_type_ids').squeeze(1).to(self.args.device)
+                target_pred = model(target_input_ids, target_attention_mask, target_token_type_ids, is_train=False)
 
                 # concat
                 sim = F.cosine_similarity(source_pred, target_pred, dim=-1)

@@ -38,7 +38,7 @@ parser.add_argument("--pooling", choices=['cls', 'cls_before_pooler', 'last-avg'
 parser.add_argument("--activation", default="tanh", type=str, choices=['tanh', 'relu'])
 parser.add_argument("--temperature", default=0.05, type=float, help="Set uo the temperature parameter.")
 parser.add_argument("--dropout", default=0.1, type=float, help="Set up the dropout ratio")
-parser.add_argument("--pretrained_model", default="bert-base-uncased", type=str)  # google/electra-small-discriminator
+parser.add_argument("--pretrained_model", default="bert-base-uncased", type=str)  
 parser.add_argument("--num_workers", default=0, type=int)
 # Paraphrasing
 parser.add_argument("--do_para", default=False)
@@ -58,7 +58,7 @@ parser.add_argument("--log_every_n_steps", default=100, type=int, help="Frequenc
 parser.add_argument("--fp16_precision", action='store_true', help='Whether or not to use 516-bit precision GPU training.')
 # Files
 parser.add_argument("--train_data", type=str, default="./data/training/wiki1m_for_simcse.txt",
-                    help="Choose the dataset you want to train with.")  # filtered_wiki wiki1m_for_simcse
+                    help="Choose the dataset you want to train with.")  
 parser.add_argument("--para_train_data", type=str, default="./data/training/paraphrase.txt")
 parser.add_argument("--dev_file", type=str, default="./data/stsbenchmark/sts-dev.csv")
 parser.add_argument("--test_file", type=str, default="./data/stsbenchmark/sts-test.csv")

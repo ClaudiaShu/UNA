@@ -1,6 +1,5 @@
 .vscode/launch.json
 data/downstream
-data/stsbenchmark
 data/training
 results/
 tfidf/
