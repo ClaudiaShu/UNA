@@ -14,3 +14,4 @@ seaborn
 loguru
 sentencepiece
 sacremoses
+typer
