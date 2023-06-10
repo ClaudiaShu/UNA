@@ -11,6 +11,8 @@
 ## Environments
 
 ```
+conda create -n una python=3.8
+conda activate una
 pip install -r requirements.txt
 ```
 
