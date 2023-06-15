@@ -30,10 +30,18 @@ cd data/
 bash data/download_wiki.sh
 ```
 
+### Prepare the paraphrased sentences
+```
+cd data/augment/
+python paraphrase.py
+```
 
-todo: download link for paraphrasing or instructions on obtaining paraphrasing set.
-todo: instructions for producing the TF-IDF matrix
-
+### Produce TF-IDF matrix offline 
+```
+cd data/augment/
+python create_dict.py
+```
+Change the mode to 'para' to produce the TF-IDF matrix for paraphrasing.
 
 ### Evaluation set
 ```
