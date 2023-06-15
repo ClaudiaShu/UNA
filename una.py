@@ -117,8 +117,11 @@ class SimCSE(object):
 
                 input_ids = torch.cat([data[i]['input_ids'] for i in range(len(data))]).to(device)
                 attention_mask = torch.cat([data[i]['attention_mask'] for i in range(len(data))]).to(device)
-                token_type_ids = torch.cat([data[i]['token_type_ids'] for i in range(len(data))]).to(device)
-                out = self.model(input_ids, attention_mask, token_type_ids)
+                if self.args.arch == 'roberta':
+                    out = self.model(input_ids, attention_mask=attention_mask)
+                else:
+                    token_type_ids = torch.cat([data[i]['token_type_ids'] for i in range(len(data))]).to(device)
+                    out = self.model(input_ids, attention_mask, token_type_ids)
 
                 logits, labels = self.simcse_unsup_loss(out)
 
@@ -158,14 +161,6 @@ class SimCSE(object):
 
         logging.debug(f"Best corrcoef {best} at step: {best_step}")
 
-        if self.args.save_data:
-            torch.save(self.model.state_dict(), os.path.join(self.args.output_path, 'final_simcse.pt'))
-            checkpoint_name = 'checkpoint_final'
-            try:
-                self.model.model.save_pretrained(os.path.join(self.writer.log_dir, checkpoint_name))
-            except:
-                self.model.module.model.save_pretrained(os.path.join(self.writer.log_dir, checkpoint_name))
-
 
     def evaluate(self, model, dataloader):
         model.eval()
@@ -176,14 +171,20 @@ class SimCSE(object):
                 # source        [batch, 1, seq_len] -> [batch, seq_len]
                 source_input_ids = source.get('input_ids').squeeze(1).to(self.args.device)
                 source_attention_mask = source.get('attention_mask').squeeze(1).to(self.args.device)
-                source_token_type_ids = source.get('token_type_ids').squeeze(1).to(self.args.device)
-                source_pred = model(source_input_ids, source_attention_mask, source_token_type_ids, is_train=False)
+                if self.args.arch == 'roberta':
+                    source_pred = model(source_input_ids, source_attention_mask, is_train=False)
+                else:
+                    source_token_type_ids = source.get('token_type_ids').squeeze(1).to(self.args.device)
+                    source_pred = model(source_input_ids, source_attention_mask, source_token_type_ids, is_train=False)
 
                 # target        [batch, 1, seq_len] -> [batch, seq_len]
                 target_input_ids = target.get('input_ids').squeeze(1).to(self.args.device)
                 target_attention_mask = target.get('attention_mask').squeeze(1).to(self.args.device)
-                target_token_type_ids = target.get('token_type_ids').squeeze(1).to(self.args.device)
-                target_pred = model(target_input_ids, target_attention_mask, target_token_type_ids, is_train=False)
+                if self.args.arch == 'roberta':
+                    target_pred = model(target_input_ids, target_attention_mask, is_train=False)
+                else:
+                    target_token_type_ids = target.get('token_type_ids').squeeze(1).to(self.args.device)
+                    target_pred = model(target_input_ids, target_attention_mask, target_token_type_ids, is_train=False)
 
                 # concat
                 sim = F.cosine_similarity(source_pred, target_pred, dim=-1)

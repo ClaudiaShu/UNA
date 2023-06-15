@@ -1,7 +1,8 @@
 import torch
 from torch import nn
-from transformers import AutoModel, BertConfig, BertModel
+from transformers import AutoModel, BertConfig, BertModel, RobertaConfig, RobertaModel
 from transformers.models.bert.modeling_bert import BertLMPredictionHead
+from transformers.models.roberta.modeling_roberta import RobertaLMHead
 
 class MLPLayer(nn.Module):
     """
@@ -50,13 +51,22 @@ class SimcseModelUnsup(nn.Module):
         if pretrained_model is None:
             config = BertConfig()
             self.model = BertModel(config)
-
-        config = BertConfig.from_pretrained(pretrained_model)
-        config.attention_probs_dropout_prob = self.args.dropout
-        config.hidden_dropout_prob = self.args.dropout
-        self.model = AutoModel.from_pretrained(pretrained_model, config=config)
-        if self.args.do_mlm:
-            self.lm_head = BertLMPredictionHead(config)
+        elif self.args.arch == 'roberta':
+            config = RobertaConfig.from_pretrained(pretrained_model)
+            config.attention_probs_dropout_prob = self.args.dropout
+            config.hidden_dropout_prob = self.args.dropout
+            self.model = AutoModel.from_pretrained(pretrained_model, config=config)
+            if self.args.do_mlm:
+                self.lm_head = RobertaLMHead(config)
+        elif self.args.arch == 'bert':
+            config = BertConfig.from_pretrained(pretrained_model)
+            config.attention_probs_dropout_prob = self.args.dropout
+            config.hidden_dropout_prob = self.args.dropout
+            self.model = AutoModel.from_pretrained(pretrained_model, config=config)
+            if self.args.do_mlm:
+                self.lm_head = BertLMPredictionHead(config)
+        else:
+            raise ValueError("Unsupported pretrained model")
         
         self.mlp = MLPLayer(config, args=self.args)
 
@@ -95,80 +105,6 @@ class SimcseModelUnsup(nn.Module):
             avg = torch.cat((second_last_avg.unsqueeze(1), last_avg.unsqueeze(1)), dim=1)  # [batch, 2, 768]
             return torch.avg_pool1d(avg.transpose(1, 2), kernel_size=2).squeeze(-1)  # [batch, 768]
 
-class ScratchModelUnsup(nn.Module):
-    """Simcse unsupercised"""
-
-    def __init__(self, *args, **kwargs):
-        super(ScratchModelUnsup, self).__init__()
-        self.args = kwargs['args']
-
-        pretrained_model = self.args.pretrained_model
-        if pretrained_model is None:
-            config = BertConfig()
-            self.model = BertModel(config, args=self.args)
-
-        # pass the config to model constructor instead of from_pretrained
-        # this creates the model as per the params in config
-        # but with weights randomly initialized
-        config = BertConfig(
-            attention_probs_dropout_prob=self.args.dropout,
-            gradient_checkpointing=False,
-            hidden_act='gelu',
-            hidden_dropout_prob=self.args.dropout,
-            hidden_size=768,
-            initializer_range=0.02,
-            intermediate_size=3072,
-            layer_norm_eps=1e-12,
-            max_position_embeddings=512,
-            model_type='bert',
-            num_attention_heads=12,
-            num_hidden_layers=12,
-            pad_token_id=0,
-            position_embedding_type='absolute',
-            transformers_version='4.6.0.dev0',
-            vocab_size=30522,
-            type_vocab_size=2,
-        )
-        self.model = BertModel(config)
-        if self.args.do_mlm:
-            self.lm_head = BertLMPredictionHead(config)
-
-        self.mlp = MLPLayer(config)
-
-    def forward(self, input_ids, attention_mask, token_type_ids=None, output_hidden_states=True, is_train=True):
-        out = self.model(input_ids, attention_mask, token_type_ids, output_hidden_states=output_hidden_states,return_dict=True)
-
-        if self.args.pooling == 'cls':
-            # If using "cls", we add an extra MLP layer
-            # (same as BERT's original implementation) over the representation.
-            out = out.last_hidden_state[:, 0]  # [batch, 768]
-            if is_train:
-                return self.mlp(out)
-            else:
-                return out
-
-        if self.args.pooling == 'cls_before_pooler':
-            return out.last_hidden_state[:, 0]  # [batch, 768]
-
-        if self.args.pooling == 'last-avg':
-            last = out.last_hidden_state.transpose(1, 2)  # [batch, 768, seqlen]
-            return torch.avg_pool1d(last, kernel_size=last.shape[-1]).squeeze(-1)  # [batch, 768]
-
-        if self.args.pooling == 'first-last-avg':
-            first = out.hidden_states[1].transpose(1, 2)  # [batch, 768, seqlen]
-            last = out.hidden_states[-1].transpose(1, 2)  # [batch, 768, seqlen]
-            first_avg = torch.avg_pool1d(first, kernel_size=last.shape[-1]).squeeze(-1)  # [batch, 768]
-            last_avg = torch.avg_pool1d(last, kernel_size=last.shape[-1]).squeeze(-1)  # [batch, 768]
-            avg = torch.cat((first_avg.unsqueeze(1), last_avg.unsqueeze(1)), dim=1)  # [batch, 2, 768]
-            return torch.avg_pool1d(avg.transpose(1, 2), kernel_size=2).squeeze(-1)  # [batch, 768]
-
-        if self.args.pooling == 'last2_avg':
-            second_last = out.hidden_states[-2].transpose(1, 2)
-            last = out.hidden_states[-1].transpose(1, 2)
-            second_last_avg = torch.avg_pool1d(second_last, kernel_size=last.shape[-1]).squeeze(-1)  # [batch, 768]
-            last_avg = torch.avg_pool1d(last, kernel_size=last.shape[-1]).squeeze(-1)  # [batch, 768]
-            avg = torch.cat((second_last_avg.unsqueeze(1), last_avg.unsqueeze(1)), dim=1)  # [batch, 2, 768]
-            return torch.avg_pool1d(avg.transpose(1, 2), kernel_size=2).squeeze(-1)  # [batch, 768]
 
 
 '''
