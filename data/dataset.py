@@ -110,15 +110,12 @@ class TrainDataset(Dataset):
             # mode 1: p1 probability replace; mode2: p1 random replace; mode3: p2 threshold selection
             if self.args.tfidf_mode == "uni":
                 self.op = UnifRep(token_prob=self.args.token_prob, data_stats=self.data_stats, uda=do_uda)
-            elif self.args.tfidf_mode == "tfidf":
-                self.op = TfIdfWordRep(token_prob=self.args.token_prob, data_stats=self.data_stats, uda=do_uda, p_rand=self.args.p2_rand)
             elif self.args.tfidf_mode == "nbh":
                 self.op = ThresholdRep(token_prob=self.args.token_prob, data_stats=self.data_stats, uda=do_uda, nbh_size=self.args.nbh_size)
-            elif self.args.tfidf_mode == "group":
-                self.op = GroupRep(token_prob=self.args.token_prob, data_stats=self.data_stats, uda=do_uda, nbh_size=self.args.gp_num)
-
+            else:
+                raise ValueError("Please check the replacement mode")
+            
     def __len__(self):
-        # return 10000
         return len(self.data['train'])
 
     def __getitem__(self, index: int):

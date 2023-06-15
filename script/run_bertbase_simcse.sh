@@ -1,0 +1,23 @@
+python run.py \
+    --epochs 1 \
+    --batch_size 64 \
+    --batch_size_eval 256 \
+    --lr 3e-5 \
+    --max_len 32 \
+    --pooling cls \
+    --activation tanh \
+    --temperature 0.05 \
+    --dropout 0.1 \
+    --pretrained_model bert-base-uncased \
+    --num_workers 0 \
+    --token_prob 0.5 \
+    --seed 42 \
+    --weight_decay 0.0 \
+    --log_every_n_steps 100 \
+    --fp16_precision \
+    --train_data ./data/training/wiki1m_for_simcse.txt \
+    --para_train_data ./data/training/paraphrase.txt \
+    --dev_file ./data/stsbenchmark/sts-dev.csv \
+    --test_file data/stsbenchmark/sts-test.csv \
+    --save_data \
+    --output_path bert_simcse \

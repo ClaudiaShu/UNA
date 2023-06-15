@@ -1,5 +1,8 @@
 # UNA
 
+
+## Environments
+
 ## Citing
 
 ## About
@@ -27,8 +30,10 @@ cd data/
 bash data/download_wiki.sh
 ```
 
+
 todo: download link for paraphrasing or instructions on obtaining paraphrasing set.
 todo: instructions for producing the TF-IDF matrix
+
 
 ### Evaluation set
 ```
@@ -36,6 +41,8 @@ cd data/downstream/
 bash download_dataset.sh
 ```
 
+
 ## Train UNA
 
 ## Code structure
+
