@@ -49,8 +49,39 @@ cd data/downstream/
 bash download_dataset.sh
 ```
 
+### Code structure
+After preparing the datasets, the structure of the code shoudl look like this:
+
+
+```
+.
+├── data  
+│   ├── augment                      
+│   ├── ├── paraphrase.py            # code for creating the paraphrased lines
+│   ├── └── create_dict.py           # code for creating matrices under folder tfidf/
+│   ├── downstream                   # folder containing evaluation dataset
+│   ├── stsbenchmark                 # folder containing validation dataset
+│   ├── training                     # folder containing training dataset
+├── evaluate                         # Evaluation code *
+├── function   
+│   ├── metrics.py
+│   ├── seed.py                      # initialize random seeds
+│   └── tfidf_una.py                 # file for calculating the TF-IDF matrices and vectors for UNA
+├── model 			
+│   ├── lambda_scheduler.py          # contains different schedulers             
+│   └── models.py                    # backbone BERT/RpBERTa model  
+├── script                           # folder that contain .sh scripts to run the pre-training file
+├── tfidf
+│   ├── ori                          # folder for pre-saved TF-IDF representation of the original training dataset.
+│   └── para                         # folder for pre-saved TF-IDF representation of the original training and the paraphrased dataset.
+├── run.py                           # run pretraining with UNA
+├── una.py                           # run pretraining with FaceSwap
+└── utils.py
+```
+* Evaluation code thanks to [SentEval](https://github.com/facebookresearch/SentEval) and [SimCSE](https://github.com/princeton-nlp/SimCSE)
 
 ## Train UNA
 
-## Code structure
+
+
 
