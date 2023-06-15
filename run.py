@@ -124,12 +124,14 @@ def main():
                                  pin_memory=False)
 
     optimizer = torch.optim.AdamW(model.parameters(), weight_decay=args.weight_decay, lr=args.lr)
+
     if args.arch == "bert":
         scheduler = get_linear_schedule(optimizer=optimizer, num_training_steps=len(train_loader)*args.epochs)
     elif args.arch == "roberta":
         scheduler = scheduler = get_constant_schedule(optimizer=optimizer)
     else:
         raise ValueError("Unsupported model type!")
+
 
     simcse = SimCSE(args=args, model=model, optimizer=optimizer, scheduler=scheduler, tokenizer=tokenizer)
     if args.do_train:
