@@ -50,7 +50,7 @@ bash download_dataset.sh
 ```
 
 ### Code structure
-After preparing the datasets, the structure of the code shoudl look like this:
+After preparing the datasets, the structure of the code should look like this:
 
 
 ```
