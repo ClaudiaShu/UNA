@@ -27,6 +27,8 @@ cd data/
 bash data/download_wiki.sh
 ```
 
+todo: download link for paraphrasing or instructions on obtaining paraphrasing set.
+
 ### Evaluation set
 ```
 cd data/downstream/
