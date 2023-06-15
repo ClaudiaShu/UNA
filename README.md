@@ -28,6 +28,7 @@ bash data/download_wiki.sh
 ```
 
 todo: download link for paraphrasing or instructions on obtaining paraphrasing set.
+todo: instructions for producing the TF-IDF matrix
 
 ### Evaluation set
 ```
