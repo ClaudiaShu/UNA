@@ -61,8 +61,6 @@ def save_csv(data, filename):
         writer = csv.writer(file)
         for line in data:
             writer.writerow(line)
-        # writer.writerow(["Word"])  # Write the header
-        # writer.writerows([[key] for key in sorted_idf])  # Write keys row by row
 
 if "para" in mode:
     sentences = get_sentences(datasets, trans_datasets)
@@ -87,14 +85,14 @@ for word in tqdm(word_doc_freq):
     idf[word] = math.log(len(sentences) * 1. / word_doc_freq[word])
 # Save this IDF matrix offline, 1 for original, 1 for paraphrasing
 
-# idf_file = f"tfidf/{mode}/term_idf.csv"
+idf_file = f"tfidf/{mode}/term_idf.csv"
 
-# with open(idf_file, 'w', newline='') as file:
-#     fieldnames = ['Keys', 'Scores_idf']
-#     writer = csv.DictWriter(file, fieldnames=fieldnames)
-#     writer.writeheader()
-#     for key, score in idf.items():
-#         writer.writerow({'Keys':key, 'Scores_idf':score})
+with open(idf_file, 'w', newline='') as file:
+    fieldnames = ['Keys', 'Scores_idf']
+    writer = csv.DictWriter(file, fieldnames=fieldnames)
+    writer.writeheader()
+    for key, score in idf.items():
+        writer.writerow({'Keys':key, 'Scores_idf':score})
 
 # Compute global replacement score
 count = {}
@@ -112,9 +110,7 @@ for i in tqdm(range(len(sentences))):
             tf_idf_norm[word] = 0
 
         count[word] += 1
-        # count[word] += word_counts[word]
 
-        # word_freq = word_counts[word] / len(cur_sent)
         word_freq = math.log(1 + word_counts[word] / len(cur_sent))
         cache_score = word_freq * idf[word]
         norm_cache_score = cache_score/len(cur_sent)
@@ -126,64 +122,21 @@ tf_idf_mean = {word: tf_idf_sum[word]/count[word] for word in idf.keys()}
 
 # Save this count, tf_idf_max matrix offline
 
-# count_file = f"tfidf/{mode}/term_count.csv"
+count_file = f"tfidf/{mode}/term_count.csv"
 
-# with open(count_file, 'w', newline='') as file:
-#     fieldnames = ['Keys', 'Scores_count']
-#     writer = csv.DictWriter(file, fieldnames=fieldnames)
-#     writer.writeheader()
-#     for key, score in count.items():
-#         writer.writerow({'Keys':key, 'Scores_count':score})
-
-# tfidfmax_file = f"tfidf/{mode}/term_tfidfmax.csv"
-
-# with open(tfidfmax_file, 'w', newline='') as file:
-#     fieldnames = ['Keys', 'Scores_max']
-#     writer = csv.DictWriter(file, fieldnames=fieldnames)
-#     writer.writeheader()
-#     for key, score in tf_idf_max.items():
-#         writer.writerow({'Keys':key, 'Scores_max':score})
-
-tfidfmax_file = f"tfidf/{mode}/term_tfidfnorm.csv"
-
-with open(tfidfmax_file, 'w', newline='') as file:
-    fieldnames = ['Keys', 'Scores_norm']
+with open(count_file, 'w', newline='') as file:
+    fieldnames = ['Keys', 'Scores_count']
     writer = csv.DictWriter(file, fieldnames=fieldnames)
     writer.writeheader()
-    for key, score in tf_idf_norm.items():
-        writer.writerow({'Keys':key, 'Scores_norm':score})
+    for key, score in count.items():
+        writer.writerow({'Keys':key, 'Scores_count':score})
 
-# tfidfmax_file = f"tfidf/{mode}/term_tfidfsum.csv"
-
-# with open(tfidfmax_file, 'w', newline='') as file:
-#     fieldnames = ['Keys', 'Scores_sum']
-#     writer = csv.DictWriter(file, fieldnames=fieldnames)
-#     writer.writeheader()
-#     for key, score in tf_idf_sum.items():
-#         writer.writerow({'Keys':key, 'Scores_sum':score})
-
-tfidfmax_file = f"tfidf/{mode}/term_tfidfmean.csv"
+tfidfmax_file = f"tfidf/{mode}/term_tfidfmax.csv"
 
 with open(tfidfmax_file, 'w', newline='') as file:
-    fieldnames = ['Keys', 'Scores_mean']
+    fieldnames = ['Keys', 'Scores_max']
     writer = csv.DictWriter(file, fieldnames=fieldnames)
     writer.writeheader()
-    for key, score in tf_idf_mean.items():
-        writer.writerow({'Keys':key, 'Scores_mean':score})
-
-filter_dict = count
-keys_to_remove = []
-for key, value in tqdm(filter_dict.items()):
-    if value <= 4 or math.log(value) > 8:
-        keys_to_remove.append(key)
-# Save keys to remove offline
-
-# filter_file = f"tfidf/{mode}/term_filter.csv"
-
-# with open(filter_file, 'w', newline='') as file:
-#     fieldnames = ['Keys']
-#     writer = csv.DictWriter(file, fieldnames=fieldnames)
-#     writer.writeheader()
-#     for key in keys_to_remove:
-#         writer.writerow({'Keys':key})
+    for key, score in tf_idf_max.items():
+        writer.writerow({'Keys':key, 'Scores_max':score})
 
