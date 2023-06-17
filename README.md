@@ -16,7 +16,6 @@
 ```
 conda create -n una python=3.8
 conda activate una
-git clone https://github.com/ClaudiaShu/UNA.git
 cd UNA
 pip install -r requirements.txt
 ```
