@@ -79,7 +79,6 @@ After preparing the datasets, the structure of the code should look like this:
 ├── una.py                           # run pretraining with FaceSwap
 └── utils.py
 ```
-* Evaluation code thanks to [SentEval](https://github.com/facebookresearch/SentEval) and [SimCSE](https://github.com/princeton-nlp/SimCSE)
 
 ## Train UNA
 
@@ -87,9 +86,14 @@ To reproduce our results (for STS) with UNA framework, run the following trainin
 
 ## Trained Model
 
-Models can be downloaded from [here](https://drive.google.com/drive/folders/1INk_txCPAtTHgsegP1b6cb97Xt_ITo5a)
+Models can be downloaded from [here](https://drive.google.com/drive/folders/1INk_txCPAtTHgsegP1b6cb97Xt_ITo5a).
 
 ### Results
 
 <img src=misc/table.png>
+
+### Acknowledgement
+
+* Our code is inspired by: [UDA](https://github.com/google-research/uda).
+* Evaluation code thanks to [SentEval](https://github.com/facebookresearch/SentEval) and [SimCSE](https://github.com/princeton-nlp/SimCSE).
 
