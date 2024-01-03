@@ -2,12 +2,10 @@
 
 
 ## Environments
-
-## Citing
+This repository is tested on Python 3.8+
 
 ## About
-
-## Highlights
+We present Unsupervised hard Negative Augmentation (UNA), a method that generates synthetic negative instances based on the term frequency-inverse document frequency (TF-IDF) retrieval model.
 
 # Getting started
 
@@ -23,19 +21,21 @@ pip install -r requirements.txt
 ## Dataset preparation
 
 ### Training set
-
+We used the training dataset from SimCSE, which can be downloaded by running the following script.
 ```
 cd data/
 bash data/download_wiki.sh
 ```
 
 ### Prepare the paraphrased sentences
+To create the paraphrased sentences, run the following script:
 ```
 cd data/augment/
 python paraphrase.py
 ```
 
 ### Produce TF-IDF matrix offline 
+Run the following script to prepare the TD-IDF matrix. If not, uncomment lines 94-101 in file `data/dataset.py`.
 ```
 cd data/augment/
 python create_dict.py
@@ -43,6 +43,7 @@ python create_dict.py
 Change the mode to 'para' to produce the TF-IDF matrix for paraphrasing.
 
 ### Evaluation set
+The evaluation set can be downloaded by running the following script:
 ```
 cd data/downstream/
 bash download_dataset.sh
@@ -80,6 +81,8 @@ After preparing the datasets, the structure of the code should look like this:
 * Evaluation code thanks to [SentEval](https://github.com/facebookresearch/SentEval) and [SimCSE](https://github.com/princeton-nlp/SimCSE)
 
 ## Train UNA
+
+To reproduce our results (for STS) with UNA framework, run the following training scipt [here](https://github.com/ClaudiaShu/UNA/tree/main/script).
 
 
 
