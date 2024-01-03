@@ -1,6 +1,5 @@
 # UNA
 
-
 ## Environments
 This repository is tested on Python 3.8+
 
@@ -84,6 +83,11 @@ After preparing the datasets, the structure of the code should look like this:
 
 To reproduce our results (for STS) with UNA framework, run the following training scipt [here](https://github.com/ClaudiaShu/UNA/tree/main/script).
 
+## Trained Model
 
+Models can be downloaded from [here](https://drive.google.com/drive/folders/1INk_txCPAtTHgsegP1b6cb97Xt_ITo5a)
 
+### Results
+
+<img src=misc/table.png>
 
