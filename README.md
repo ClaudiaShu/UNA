@@ -1,5 +1,7 @@
 # UNA
 
+This is the official code of our Paper "Unsupervised hard Negative Augmentation for contrastive learning"
+
 ## Environments
 This repository is tested on Python 3.8+
 
