@@ -36,7 +36,7 @@ python paraphrase.py
 ```
 
 ### Produce TF-IDF matrix offline 
-Run the following script to prepare the TD-IDF matrix. If not, uncomment lines 94-101 in file `data/dataset.py`.
+Run the following script to prepare the TD-IDF matrix. If you don't want to prepare the matrix offline, uncomment lines 94-101 in file `data/dataset.py`.
 ```
 cd data/augment/
 python create_dict.py
